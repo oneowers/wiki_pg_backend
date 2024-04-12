@@ -4,6 +4,7 @@ const {Device, DeviceInfo} = require('../models/models')
 const ApiError = require('../error/ApiError')
 import { put } from '@vercel/blob';
 
+const token = 'YOUR_VERCEL_BLOB_STORAGE_TOKEN';
 
 class DeviceController {
     async create(req, res, next) {
@@ -16,6 +17,7 @@ class DeviceController {
 
             const blob = await put(fileName, img, {
                 access: 'public',
+                token,
             });
 
             if(info){
@@ -29,7 +31,7 @@ class DeviceController {
                 )
             }
 
-            const device = await Device.create({name, price, brandId, typeId, img: blob})
+            const device = await Device.create({name, price, brandId, typeId, img: blob.url})
 
             return res.json(device)
         }catch(e){
