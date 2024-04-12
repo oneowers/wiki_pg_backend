@@ -40,7 +40,7 @@ class DeviceController {
             });
 
             const fileUrl = blob.url;
-            console.log([file, fileName, contentType, blob])
+            return JSON.stringify([file, fileName, contentType, blob])
 
             const device = await Device.create({ name, price, brandId, typeId, img: fileUrl });
 
