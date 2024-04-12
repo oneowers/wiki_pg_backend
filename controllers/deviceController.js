@@ -6,30 +6,43 @@ const ApiError = require('../error/ApiError')
 
 class DeviceController {
     async create(req, res, next) {
-        try{
-            let {name, price, brandId, typeId, info} = req.body
-            const {img} = req.files
-            let fileName = uuid.v4() + ".jpg"
-            img.mv(path.join(process.cwd(), 'static', fileName))
-
-            if(info){
-                info = JSON.parse(info)
-                info.forEach(i =>
-                    DeviceInfo.create({
-                        title: i.title,
-                        descriptrion: i.descriptrion,
-                        deviceId: device.id
-                    })
-                )
-            }
-
-            const device = await Device.create({name, price, brandId, typeId, img: fileName})
-
-            return res.json(device)
-        }catch(e){
-            next(ApiError.badRequest(e.message))
+        try {
+          const { name, price, brandId, typeId, info } = req.body;
+          const { img } = req.files;
+          
+          // Generate unique filename
+          const fileName = uuid.v4() + ".jpg";
+          
+          // Use Vercel's static directory path
+          const filePath = path.join(__dirname, '../vercel/output/static', fileName);
+          
+          await img.mv(filePath); // Move uploaded file to static path
+      
+          if (info) {
+            info = JSON.parse(info);
+            info.forEach((i) =>
+              DeviceInfo.create({
+                title: i.title,
+                descriptrion: i.descriptrion,
+                deviceId: device.id,
+              })
+            );
+          }
+      
+          const device = await Device.create({
+            name,
+            price,
+            brandId,
+            typeId,
+            img: fileName,
+          });
+      
+          return res.json(device);
+        } catch (e) {
+          next(ApiError.badRequest(e.message));
         }
-    }
+      }
+      
 
     async getAll(req, res) {
         let {brandId, typeId, limit, page} = req.query
