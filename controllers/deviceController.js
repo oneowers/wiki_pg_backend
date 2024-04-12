@@ -3,7 +3,6 @@ const path = require('path')
 const {Device, DeviceInfo} = require('../models/models')
 const ApiError = require('../error/ApiError')
 import { put } from '@vercel/blob';
-import { revalidatePath } from 'next/cache';
 
 
 class DeviceController {
@@ -18,7 +17,6 @@ class DeviceController {
             const blob = await put(fileName, img, {
                 access: 'public',
             });
-            revalidatePath('/');
 
             if(info){
                 info = JSON.parse(info)
