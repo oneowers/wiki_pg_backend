@@ -30,7 +30,7 @@ class DeviceController {
             //FOR VERCEL
             const file = req.files.img;
             const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Генерируем уникальное имя файла
-            const contentType = file.data.type || 'text/plain';
+            const contentType = file.mimetype || 'text/plain';
 
             
 
@@ -40,11 +40,10 @@ class DeviceController {
             });
 
             const fileUrl = blob.url;
-            return res.json([file, fileName, contentType, blob])
 
             const device = await Device.create({ name, price, brandId, typeId, img: fileUrl });
 
-            return res.json(device);
+            return res.json({"file": file, "fileName": fileName, "contentType": contentType, "blob": blob, "device": device})
         }catch(e){
             next(ApiError.badRequest(e.message))
         }
