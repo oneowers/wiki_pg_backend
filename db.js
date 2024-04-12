@@ -11,10 +11,10 @@ module.exports = new Sequelize(
         port: process.env.DB_PORT,       // Use the database port from the environment variable
         ssl: true, // Ensure SSL is enabled
         dialectOptions: {
-            // ssl: { // IF GLOBAL STORE
-            //     require: true,
-            //     rejectUnauthorized: false // Avoid rejection of unauthorized connections
-            // }
+            ssl: { // IF GLOBAL STORE
+                require: true,
+                rejectUnauthorized: false // Avoid rejection of unauthorized connections
+            }
         }
     }
 );
