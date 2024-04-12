@@ -2,24 +2,13 @@ const uuid = require('uuid')
 const path = require('path')
 const {Device, DeviceInfo} = require('../models/models')
 const ApiError = require('../error/ApiError')
-import { put } from '@vercel/blob';
+const { put } = require('@vercel/blob');
 
-const token = 'BLOB_READ_WRITE_TOKEN';
 
 class DeviceController {
     async create(req, res, next) {
         try{
             let {name, price, brandId, typeId, info} = req.body
-
-
-            const {img} = req.files
-            let fileName = uuid.v4() + ".jpg"
-
-            const blob = await put(fileName, img, {
-                access: 'public',
-                token,
-            });
-
             if(info){
                 info = JSON.parse(info)
                 info.forEach(i =>
@@ -31,9 +20,31 @@ class DeviceController {
                 )
             }
 
-            const device = await Device.create({name, price, brandId, typeId, img: blob.url})
 
-            return res.json(device)
+            
+            //FOR LOCAL
+            // const {img} = req.files
+            // let fileName = uuid.v4() + ".jpg"
+            // img.mv(path.resolve(__dirname, '..', 'static', fileName))
+
+            //FOR VERCEL
+            const file = req.files.img;
+            const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Генерируем уникальное имя файла
+            const contentType = file.type || 'text/plain';
+
+            // Сохраняем файл
+            const blob = await put(fileName, file.data, {
+                contentType,
+                access: 'public'
+            });
+
+            // Получаем URL файла
+            const fileUrl = blob.url;
+
+            // Создаем устройство в базе данных с ссылкой на файл
+            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl });
+
+            return res.json(device);
         }catch(e){
             next(ApiError.badRequest(e.message))
         }
