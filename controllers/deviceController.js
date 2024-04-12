@@ -10,7 +10,7 @@ class DeviceController {
             let {name, price, brandId, typeId, info} = req.body
             const {img} = req.files
             let fileName = uuid.v4() + ".jpg"
-            img.mv(path.resolve(__dirname, '..', 'static', fileName))
+            img.mv(path.join(process.cwd(), 'static', fileName))
 
             if(info){
                 info = JSON.parse(info)
