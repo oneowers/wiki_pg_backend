@@ -9,16 +9,7 @@ class DeviceController {
     async create(req, res, next) {
         try{
             let {name, price, brandId, typeId, info} = req.body
-            if(info){
-                info = JSON.parse(info)
-                info.forEach(i =>
-                    DeviceInfo.create({
-                        title: i.title,
-                        description: i.description,
-                        id: device.id
-                    })
-                )
-            }
+
             //FOR LOCAL
             // const {img} = req.files
             // let fileName = uuid.v4() + ".jpg"
@@ -28,17 +19,25 @@ class DeviceController {
             const file = req.files.img;
             const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Генерируем уникальное имя файла
             const contentType = file.mimetype || 'text/plain';
-
-            
-
             const blob = await put(fileName, file.data, {
                 contentType,
                 access: 'public'
             });
-
             const fileUrl = blob.url;
 
             const device = await Device.create({ name, price, brandId, typeId, img: fileUrl });
+
+            if (info) {
+                info = JSON.parse(info);
+                info.forEach(i =>
+                    DeviceInfo.create({
+                        title: i.title,
+                        description: i.description,
+                        deviceId: device.id
+                    })
+                );
+            }
+
 
             return res.json({"file": file, "fileName": fileName, "contentType": contentType, "blob": blob, "device": device})
         }catch(e){
