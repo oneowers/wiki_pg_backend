@@ -11,17 +11,15 @@ class DeviceController {
             let {name, price, brandId, typeId, info} = req.body
             if(info){
                 info = JSON.parse(info)
-                info.forEach(i =>
-                    DeviceInfo.create({
-                        title: i.title,
-                        description: i.description,
-                        deviceId: device.id
-                    })
-                )
+                return res.json(info)
+                // info.forEach(i =>
+                //     DeviceInfo.create({
+                //         title: i.title,
+                //         description: i.description,
+                //         deviceId: device.id
+                //     })
+                // )
             }
-
-
-            
             //FOR LOCAL
             // const {img} = req.files
             // let fileName = uuid.v4() + ".jpg"
