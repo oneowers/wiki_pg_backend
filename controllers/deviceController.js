@@ -30,7 +30,7 @@ class DeviceController {
             //FOR VERCEL
             const file = req.files.img;
             const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Генерируем уникальное имя файла
-            const contentType = file.type || 'text/plain';
+            const contentType = file.data.type || 'text/plain';
 
             
 
