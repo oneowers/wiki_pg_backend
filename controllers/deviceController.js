@@ -32,16 +32,16 @@ class DeviceController {
             const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Генерируем уникальное имя файла
             const contentType = file.type || 'text/plain';
 
-            // Сохраняем файл
+            
+
             const blob = await put(fileName, file.data, {
                 contentType,
                 access: 'public'
             });
 
-            // Получаем URL файла
             const fileUrl = blob.url;
+            console.log([file, fileName, contentType, blob])
 
-            // Создаем устройство в базе данных с ссылкой на файл
             const device = await Device.create({ name, price, brandId, typeId, img: fileUrl });
 
             return res.json(device);
