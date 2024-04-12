@@ -4,7 +4,7 @@ const {Device, DeviceInfo} = require('../models/models')
 const ApiError = require('../error/ApiError')
 import { put } from '@vercel/blob';
 
-const token = 'YOUR_VERCEL_BLOB_STORAGE_TOKEN';
+const token = 'BLOB_READ_WRITE_TOKEN';
 
 class DeviceController {
     async create(req, res, next) {
