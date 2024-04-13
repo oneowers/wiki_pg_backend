@@ -102,7 +102,7 @@ class UserControler {
             const url = process.env.SMS_HOST;
             const token = process.env.SMS_TOKEN;
             
-            return res.json([url, { mobile_phone: phoneNumber, message }])
+            // return res.json([url, { mobile_phone: phoneNumber, message }])
         
             await axios.post(url, { mobile_phone: phoneNumber, message }, {
                 headers: {
