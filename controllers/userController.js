@@ -113,7 +113,7 @@ class UserControler {
             res.json({ success: true, message: 'SMS успешно отправлено.' });
         } catch (error) {
             console.error('Ошибка отправки SMS:', error);
-            return res.status(error.response.status).json({ success: false, message: 'Произошла ошибка при отправке SMS.', error: error.message });
+            res.status(500).json({ success: false, message: 'Произошла ошибка при отправке SMS.' });
         }
     }
 
