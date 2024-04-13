@@ -100,7 +100,7 @@ class UserControler {
             
             const verificationCode = await generateAndSaveVerificationCode(user.id);
             const message = `Код подтверждения: ${verificationCode}`;
-            const url = "https://corsproxy.io/?http://notify.eskiz.uz/api/message/sms/send";
+            const url = "http://notify.eskiz.uz/api/message/sms/send";
             const token = process.env.SMS_TOKEN;
             
             // return res.json([url, { mobile_phone: phoneNumber, message }])
