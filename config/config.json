@@ -1,0 +1,38 @@
+{
+  "development": {
+    "username": "default",
+    "password": "MPAylx8JIG5Y",
+    "database": "verceldb",
+    "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
+    "port": 5432,
+    "dialect": "postgres",
+    "ssl": true, 
+    "dialectOptions": {
+      "ssl": { "require": true }
+    }
+  },
+  "test": {
+    "username": "default",
+    "password": "MPAylx8JIG5Y",
+    "database": "verceldb",
+    "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
+    "port": 5432,
+    "dialect": "postgres",
+    "ssl": true,
+    "dialectOptions": {
+      "ssl": { "require": true }
+    }
+  },
+  "production": {
+    "username": "default",
+    "password": "MPAylx8JIG5Y",
+    "database": "verceldb",
+    "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
+    "port": 5432,
+    "dialect": "postgres",
+    "ssl": true,
+    "dialectOptions": {
+      "ssl": { "require": true }
+    }
+  }
+}

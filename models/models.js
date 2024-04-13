@@ -2,10 +2,13 @@ const sequelize = require('../db')
 const {DataTypes} = require('sequelize')
 
 const User = sequelize.define('user', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement:true},
-    phone_number: {type: DataTypes.STRING, unique: true},
-    password: {type: DataTypes.STRING},
-    role: {type: DataTypes.STRING, defaultValue: "USER"},
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    phone_number: { type: DataTypes.STRING, unique: true, allowNull: false },
+    password: { type: DataTypes.STRING, allowNull: false },
+    role: { type: DataTypes.STRING, defaultValue: "USER" },
+    last_code: { type: DataTypes.INTEGER },
+    last_code_time: { type: DataTypes.DATE }, // Время последнего отправленного кода
+    code_expiration_time: { type: DataTypes.DATE } // Время истечения срока действия текущего кода
 });
 
 const Basket = sequelize.define('basket', {
