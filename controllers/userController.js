@@ -91,7 +91,7 @@ class UserControler {
     async sendVerificationSMS(req, res, next) {
         const { phoneNumber } = req.body;
         
-        // try {
+        try {
             const user = await User.findOne({ where: { phone_number: phoneNumber } });
             if (!user) {
                 return next(ApiError.notFound('Пользователь с таким номером телефона не найден.'));
@@ -104,17 +104,12 @@ class UserControler {
             
             // return res.json([url, { mobile_phone: phoneNumber, message }])
         
-            return await axios.post(url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
-                headers: {
-                    Authorization: token // Добавляем токен в заголовок запроса
-                }
-            });
             
-        //     res.json({ success: true, message: 'SMS успешно отправлено.' });
-        // } catch (error) {
-        //     console.error('Ошибка отправки SMS:', error);
-        //     next(ApiError.internal('Произошла ошибка при отправке SMS.'));
-        // }
+            res.json({ success: true, message: 'SMS успешно отправлено.' });
+        } catch (error) {
+            console.error('Ошибка отправки SMS:', error);
+            next(ApiError.internal('Произошла ошибка при отправке SMS.'));
+        }
     }
 
     async verifyCode(req, res, next) {
