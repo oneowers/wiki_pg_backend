@@ -101,9 +101,10 @@ class UserControler {
             const message = `Код подтверждения: ${verificationCode}`;
             const url = process.env.SMS_HOST;
             const token = process.env.SMS_TOKEN;
+            
+            return res.json([url, { mobile_phone: phoneNumber, message }])
         
-        
-            return await axios.post(url, { mobile_phone: phoneNumber, message }, {
+            await axios.post(url, { mobile_phone: phoneNumber, message }, {
                 headers: {
                     Authorization: token // Добавляем токен в заголовок запроса
                 }
