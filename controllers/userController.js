@@ -105,11 +105,11 @@ class UserControler {
             
             // return res.json([url, { mobile_phone: phoneNumber, message }])
         
-            await axios.post(url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
-                headers: {
-                    Authorization: token // Добавляем токен в заголовок запроса
-                }
-            });
+            // await axios.post(url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
+            //     headers: {
+            //         Authorization: token // Добавляем токен в заголовок запроса
+            //     }
+            // });
             
             res.json({ success: true, message: 'SMS успешно отправлено.' });
         } catch (error) {
