@@ -107,7 +107,7 @@ class UserControler {
             
             // Генерируем и сохраняем новый код подтверждения
             const verificationCode = await generateAndSaveVerificationCode(user.id);
-            const message = `Код подтверждения: ${verificationCode}`;
+            const message = `Код подтверждения: ${verificationCode.code}`;
             const url = "http://notify.eskiz.uz/api/message/sms/send";
             const token = process.env.SMS_TOKEN;
     
