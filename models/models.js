@@ -6,10 +6,11 @@ const User = sequelize.define('user', {
     phone_number: { type: DataTypes.STRING, unique: true, allowNull: false },
     password: { type: DataTypes.STRING, allowNull: false },
     role: { type: DataTypes.STRING, defaultValue: "GHOST" },
-    last_code: { type: DataTypes.INTEGER },
-    last_code_time: { type: DataTypes.DATE }, // Время последнего отправленного кода
-    code_expiration_time: { type: DataTypes.DATE } // Время истечения срока действия текущего кода
+    last_code: { type: DataTypes.STRING }, 
+    last_code_time: { type: DataTypes.DATE },
+    code_expiration_time: { type: DataTypes.DATE }
 });
+
 
 const Basket = sequelize.define('basket', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement:true},
