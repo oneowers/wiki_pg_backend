@@ -60,10 +60,10 @@ class UserControler {
         }
         const condidate = await User.findOne({where: {phone_number}})
         if(condidate){
-            return next(ApiError.badRequest('Polzovatel- s takim nomerom uje suwestvuet.'))
+            return next(ApiError.badRequest('Пользователь c этим номером уже связан.'))
         }
         const hashPassword = await bcrypt.hash(password, 5)
-        const user = await User.create({phone_number, role, password: hashPassword})
+        const user = await User.create({phone_number, role: 'GHOST', password: hashPassword})
         const basket = await Basket.create({userId: user.id})
         const token = generateJwt(user.id, user.phone_number, user.role)
         return res.json({token})
@@ -73,11 +73,11 @@ class UserControler {
         const {phone_number, password} = req.body
         const user = await User.findOne({where: {phone_number}})
         if(!user){
-            return next(ApiError.internal('Polzovatel- s takim ne nayden.'))
+            return next(ApiError.internal('Пользователь c таким не найден.'))
         }
         let comparePassword = bcrypt.compareSync(password, user.password)
         if(!comparePassword) {
-            return next(ApiError.internal('Ukazannyj pasrol- nevernyj.'))
+            return next(ApiError.internal('Указанный пароль неверный.'))
         }
         const token = generateJwt(user.id, user.phone_number, user.role)
         return res.json({token})
@@ -89,13 +89,26 @@ class UserControler {
     }
 
     async sendVerificationSMS(req, res, next) {
-        const { userId, phoneNumber } = req.body;
-        const verificationCode = await generateAndSaveVerificationCode(userId);
-        const message = `Код подтверждения: ${verificationCode}`;
-        const url = 'notify.eskiz.uz/api/message/sms/send';
+        const { phoneNumber } = req.body;
         
         try {
-            await axios.post(url, { mobile_phone: phoneNumber, message });
+            const user = await User.findOne({ where: { phone_number: phoneNumber } });
+            if (!user) {
+                return next(ApiError.notFound('Пользователь с таким номером телефона не найден.'));
+            }
+            
+            const verificationCode = await generateAndSaveVerificationCode(user.id);
+            const message = `Код подтверждения: ${verificationCode}`;
+            const url = process.env.SMS_HOST;
+            const token = process.env.SMS_TOKEN
+        
+        
+            await axios.post(url, { mobile_phone: phoneNumber, message }, {
+                headers: {
+                    Authorization: token // Добавляем токен в заголовок запроса
+                }
+            });
+            
             res.json({ success: true, message: 'SMS успешно отправлено.' });
         } catch (error) {
             console.error('Ошибка отправки SMS:', error);
@@ -104,21 +117,31 @@ class UserControler {
     }
 
     async verifyCode(req, res, next) {
-        const { userId, code } = req.body;
-        const user = await User.findByPk(userId);
+        const { phoneNumber, code } = req.body;
+        const user = await User.findOne({ where: { phone_number: phoneNumber } });
         if (!user) {
-            return next(ApiError.notFound('Пользователь не найден.'));
+            return res.json({ success: false, message: 'Пользователь с таким номером телефона не найден.' });
         }
+
         const isCodeValid = await bcrypt.compare(code.toString(), user.last_code);
         if (!isCodeValid) {
             return res.json({ success: false, message: 'Неверный код подтверждения.' });
         }
+
         const currentTime = new Date();
         if (currentTime > user.code_expiration_time) {
             return res.json({ success: false, message: 'Срок действия кода истек.' });
         }
+
         // Код подтверждения верен и не просрочен
-        return res.json({ success: true, message: 'Код подтверждения верен.' });
+        // Меняем роль пользователя на "USER"
+        try {
+            await user.update({ role: 'USER' });
+            return res.json({ success: true, message: 'Код подтверждения верен. Роль пользователя изменена на "USER".' });
+        } catch (error) {
+            console.error('Ошибка при изменении роли пользователя:', error);
+            return res.json({ success: false, message: 'Произошла ошибка при изменении роли пользователя.' });
+        }
     }
 }
 
