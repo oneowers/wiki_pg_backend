@@ -17,14 +17,14 @@ async function generateAndHashCode() {
     // Генерация случайного числа (например, четырехзначного кода)
     const verificationCode = Math.floor(1000 + Math.random() * 9000);
     // Хэширование кода проверки
-    const hashedCode = await bcrypt.hash(verificationCode.toString(), 10); // 10 - сила хэширования
+    const hashedCode = await bcrypt.hash(verificationCode.toString(), 5); // 10 - сила хэширования
     return { code: verificationCode, hashedCode };
 }
 
 // Генерация времени истечения срока действия кода
 function generateExpirationTime() {
     const expirationTime = new Date(); // Текущее время
-    expirationTime.setMinutes(expirationTime.getMinutes() + 10); // Например, код действителен в течение 10 минут
+    expirationTime.setMinutes(expirationTime.getMinutes() + 2); // Например, код действителен в течение 10 минут
     return expirationTime;
 }
 
@@ -46,10 +46,11 @@ async function saveVerificationCodeToDatabase(userId, verificationCode, hashedCo
 
 // Использование функций для генерации, шифрования и сохранения кода проверки
 async function generateAndSaveVerificationCode(userId) {
+    // Генерация и хэширование кода проверки
     const { code, hashedCode } = await generateAndHashCode();
     const expirationTime = generateExpirationTime();
     await saveVerificationCodeToDatabase(userId, code, hashedCode, expirationTime);
-    return code; // Возвращаем незашифрованный код для отправки по SMS
+    return { code, expirationTime }; // Возвращаем код и время истечения срока действия для проверки
 }
 
 
@@ -98,13 +99,18 @@ class UserControler {
                 return res.status(404).json({ success: false, message: 'Пользователь с таким номером телефона не найден.' });
             }
             
+            // Проверяем, не истек ли срок действия текущего кода
+            const currentTime = new Date();
+            if (user.code_expiration_time && currentTime < user.code_expiration_time) {
+                return res.status(400).json({ success: false, message: 'Срок действия текущего кода подтверждения ещё не истёк.' });
+            }
+            
+            // Генерируем и сохраняем новый код подтверждения
             const verificationCode = await generateAndSaveVerificationCode(user.id);
             const message = `Код подтверждения: ${verificationCode}`;
             const url = "http://notify.eskiz.uz/api/message/sms/send";
             const token = process.env.SMS_TOKEN;
-            
-            // return res.json([url, { mobile_phone: phoneNumber, message }])
-        
+    
             await axios.post(url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
                 headers: {
                     Authorization: token // Добавляем токен в заголовок запроса
@@ -117,6 +123,7 @@ class UserControler {
             next(ApiError.internal('Произошла ошибка при отправке SMS.'));
         }
     }
+    
 
     async verifyCode(req, res, next) {
         const { phoneNumber, code } = req.body;
@@ -125,14 +132,15 @@ class UserControler {
             return res.json({ success: false, message: 'Пользователь с таким номером телефона не найден.' });
         }
 
-        const isCodeValid = await bcrypt.compare(code.toString(), user.last_code);
-        if (!isCodeValid) {
-            return res.json({ success: false, message: 'Неверный код подтверждения.' });
-        }
-
+        
         const currentTime = new Date();
         if (currentTime > user.code_expiration_time) {
             return res.json({ success: false, message: 'Срок действия кода истек.' });
+        }
+
+        const isCodeValid = await bcrypt.compare(code.toString(), user.last_code);
+        if (!isCodeValid) {
+            return res.json({ success: false, message: 'Неверный код подтверждения.' });
         }
 
         // Код подтверждения верен и не просрочен
