@@ -94,7 +94,7 @@ class UserControler {
         try {
             const user = await User.findOne({ where: { phone_number: phoneNumber } });
             if (!user) {
-                return next(ApiError.notFound('Пользователь с таким номером телефона не найден.'));
+                return res.status(404).json({ success: false, message: 'Пользователь с таким номером телефона не найден.' });
             }
             
             const verificationCode = await generateAndSaveVerificationCode(user.id);
