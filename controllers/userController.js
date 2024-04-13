@@ -100,16 +100,16 @@ class UserControler {
             
             const verificationCode = await generateAndSaveVerificationCode(user.id);
             const message = `Код подтверждения: ${verificationCode}`;
-            const url = "https://corsproxy.io/?" + encodeURIComponent("http://notify.eskiz.uz/api/message/sms/send");
+            const url = "https://corsproxy.io/?http://notify.eskiz.uz/api/message/sms/send";
             const token = process.env.SMS_TOKEN;
             
             // return res.json([url, { mobile_phone: phoneNumber, message }])
         
-            return res.json(url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
+            return res.json([url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
                 headers: {
                     Authorization: token // Добавляем токен в заголовок запроса
                 }
-            });
+            }]);
             
             res.json({ success: true, message: 'SMS успешно отправлено.' });
         } catch (error) {
