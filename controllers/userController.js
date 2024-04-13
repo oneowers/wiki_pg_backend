@@ -117,7 +117,7 @@ class UserControler {
                 }
             });
             
-            res.json({ success: true, message: 'SMS успешно отправлено.' });
+            res.json({ verificationCode, success: true, message: 'SMS успешно отправлено.' });
         } catch (error) {
             console.error('Ошибка отправки SMS:', error);
             next(ApiError.internal('Произошла ошибка при отправке SMS.'));
