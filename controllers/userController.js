@@ -104,7 +104,7 @@ class UserControler {
             
             // return res.json([url, { mobile_phone: phoneNumber, message }])
         
-            await axios.post(url, { mobile_phone: phoneNumber, message: message, from: "4546"}, {
+            await axios.post(url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
                 headers: {
                     Authorization: token // Добавляем токен в заголовок запроса
                 }
@@ -113,7 +113,7 @@ class UserControler {
             res.json({ success: true, message: 'SMS успешно отправлено.' });
         } catch (error) {
             console.error('Ошибка отправки SMS:', error);
-            next(ApiError.internal('Произошла ошибка при отправке SMS.'));
+            return res.status(error.response.status).json({ success: false, message: 'Произошла ошибка при отправке SMS.', error: error.message });
         }
     }
 
