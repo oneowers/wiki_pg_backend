@@ -146,10 +146,8 @@ class UserControler {
         // Код подтверждения верен и не просрочен
         // Меняем роль пользователя на "USER"
         try {
-            const changeRole = 'USER'
-            if(user.role != 'ADMIN') changeRole = 'ADMIN'
-            await user.update({ role: changeRole });
-            const token = generateJwt(user.id, user.phone_number, changeRole)
+            if(user.role != "ADMIN") await user.update({ role: 'USER' });
+            const token = generateJwt(user.id, user.phone_number, user.role)
             return res.json({ token: token, success: true, message: 'Код подтверждения верен. Роль пользователя изменена на "USER".' });
         } catch (error) {
             console.error('Ошибка при изменении роли пользователя:', error);
