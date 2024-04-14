@@ -109,11 +109,11 @@ class UserControler {
             const verificationCode = await generateAndSaveVerificationCode(user.id);
             const message = `Код подтверждения: ${verificationCode.code}`;
             const url = "http://notify.eskiz.uz/api/message/sms/send";
-            const token = process.env.SMS_TOKEN;
+            const sms_token = process.env.SMS_TOKEN;
     
             await axios.post(url, { "mobile_phone": phoneNumber, "message": message, from: "4546"}, {
                 headers: {
-                    Authorization: token // Добавляем токен в заголовок запроса
+                    Authorization: sms_token // Добавляем токен в заголовок запроса
                 }
             });
             
@@ -146,8 +146,9 @@ class UserControler {
         // Код подтверждения верен и не просрочен
         // Меняем роль пользователя на "USER"
         try {
-            await user.update({ role: 'USER' });
-            return res.json({ success: true, message: 'Код подтверждения верен. Роль пользователя изменена на "USER".' });
+            if(user.role != "ADMIN") await user.update({ role: 'USER' });
+            const token = generateJwt(user.id, user.phone_number, user.role)
+            return res.json({ token: token, success: true, message: 'Код подтверждения верен. Роль пользователя изменена на "USER".' });
         } catch (error) {
             console.error('Ошибка при изменении роли пользователя:', error);
             return res.json({ success: false, message: 'Произошла ошибка при изменении роли пользователя.' });
