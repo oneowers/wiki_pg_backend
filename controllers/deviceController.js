@@ -25,7 +25,7 @@ class DeviceController {
             });
             const fileUrl = blob.url;
 
-            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl });
+            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl,  views:  0, comments: "[]"});
 
             if (info) {
                 info = JSON.parse(info);
@@ -37,6 +37,16 @@ class DeviceController {
                     })
                 );
             }
+
+            // if (comment) {
+            //     comment = JSON.parse(comment);
+            //     comment.forEach(i =>
+            //         DeviceComment.create({
+            //             user_id: i.user_id,
+            //             text: i.text
+            //         })
+            //     );
+            // }
 
 
             return res.json({"file": file, "fileName": fileName, "contentType": contentType, "blob": blob, "device": device})
@@ -76,7 +86,7 @@ class DeviceController {
         )
         return res.json(device)
     }
-    
+
     async getLatestDevices(req, res) {
         const { n } = req.params; // Получаем количество устройств из параметров запроса
         const latestDevices = await Device.findAll({
@@ -86,6 +96,36 @@ class DeviceController {
         });
         return res.json(latestDevices);
     }
+
+    async createComment(req, res, next) {
+        const token = req.headers.authorization.split(' ')[1]
+        const decoded = jwt.verify(token, process.env.SECRET_KEY) 
+        try {
+            const { device_id, text } = req.body;
+            
+            // Create the comment in the database
+            const comment = await Comment.create({ user_id: decoded.id, device_id, text });
+    
+            return res.json(comment);
+        } catch (e) {
+            next(ApiError.badRequest(e.message));
+        }
+    }
+
+    async getComments(req, res, next) {
+        try {
+            const { device_id } = req.params;
+            
+            // Retrieve all comments associated with the specified device
+            const comments = await Comment.findAll({ where: { device_id } });
+            
+            return res.json(comments);
+        } catch (e) {
+            next(ApiError.internalServerError(e.message));
+        }
+    }
+
+    
     
 }
 
