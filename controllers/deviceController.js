@@ -1,6 +1,6 @@
 const uuid = require('uuid')
 const path = require('path')
-const {Device, DeviceInfo} = require('../models/models')
+const {Device, DeviceInfo, Comment} = require('../models/models')
 const ApiError = require('../error/ApiError')
 const { put } = require('@vercel/blob');
 const jwt = require('jsonwebtoken');
