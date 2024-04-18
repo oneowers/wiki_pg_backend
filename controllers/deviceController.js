@@ -9,26 +9,32 @@ const jwt = require('jsonwebtoken');
 
 class DeviceController {
     async create(req, res, next) {
-        try{
-            let {name, price, brandId, typeId, info} = req.body
-
+        try {
+            let { name, price, brandId, typeId, info } = req.body;
+    
+            // Extract the user ID from the JWT token
+            const token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.SECRET_KEY);
+            const ownerId = decoded.id;
+    
             //FOR LOCAL
             // const {img} = req.files
             // let fileName = uuid.v4() + ".jpg"
             // img.mv(path.resolve(__dirname, '..', 'static', fileName))
-
+    
             //FOR VERCEL
             const file = req.files.img;
-            const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Генерируем уникальное имя файла
+            const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Generate a unique file name
             const contentType = file.mimetype || 'text/plain';
             const blob = await put(fileName, file.data, {
                 contentType,
                 access: 'public'
             });
             const fileUrl = blob.url;
-
-            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl,  views:  0, comments: "[]"});
-
+    
+            // Create the device with owner_id
+            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl, views: 0, comments: "[]", owner_id: ownerId });
+    
             if (info) {
                 info = JSON.parse(info);
                 info.forEach(i =>
@@ -39,23 +45,13 @@ class DeviceController {
                     })
                 );
             }
-
-            // if (comment) {
-            //     comment = JSON.parse(comment);
-            //     comment.forEach(i =>
-            //         DeviceComment.create({
-            //             user_id: i.user_id,
-            //             text: i.text
-            //         })
-            //     );
-            // }
-
-
-            return res.json({"file": file, "fileName": fileName, "contentType": contentType, "blob": blob, "device": device})
-        }catch(e){
-            next(ApiError.badRequest(e.message))
+    
+            return res.json({ "file": file, "fileName": fileName, "contentType": contentType, "blob": blob, "device": device });
+        } catch (e) {
+            next(ApiError.badRequest(e.message));
         }
     }
+    
 
     async getAll(req, res) {
         let {brandId, typeId, limit, page} = req.query
@@ -79,15 +75,33 @@ class DeviceController {
     }
 
     async getOne(req, res) {
-        const {id} = req.params
-        const device = await Device.findOne(
-            {
-                where: {id},
-                include: [{model: DeviceInfo, as: 'info'}]
+        try {
+            const { id } = req.params;
+    
+            // Find the device by its ID
+            const device = await Device.findOne({
+                where: { id },
+                include: [{ model: DeviceInfo, as: 'info' }]
+            });
+    
+            if (!device) {
+                // If device is not found, return an error response
+                return res.status(404).json({ message: 'Device not found' });
             }
-        )
-        return res.json(device)
-    }
+    
+            // Increment the view count of the device
+            device.views++; // Increment the view count
+            
+            // Save the updated device to the database
+            await device.save();
+    
+            return res.json(device);
+        } catch (error) {
+            // Handle errors
+            console.error('Error fetching device:', error);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }    
 
     async getLatestDevices(req, res) {
         const { n } = req.params; // Получаем количество устройств из параметров запроса
@@ -126,6 +140,8 @@ class DeviceController {
             next(ApiError.internalServerError(e.message));
         }
     }
+
+    
 
     
     
