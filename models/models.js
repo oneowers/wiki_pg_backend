@@ -26,9 +26,10 @@ const Device = sequelize.define('device', {
     rating: { type: DataTypes.INTEGER, defaultValue: 0 },
     img: { type: DataTypes.STRING, allowNull: false },
     views: { type: DataTypes.INTEGER, allowNull: false },
-    device_comments: { type: DataTypes.STRING, allowNull: false }, // Rename the 'comments' attribute to 'device_comments'
+    device_comments: { type: DataTypes.STRING, allowNull: true }, // Allow null values for 'device_comments'
     owner_id: { type: DataTypes.INTEGER, allowNull: false },
 });
+
 
 const Type = sequelize.define('type', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },

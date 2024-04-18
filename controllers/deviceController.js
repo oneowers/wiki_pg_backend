@@ -33,7 +33,7 @@ class DeviceController {
             const fileUrl = blob.url;
     
             // Create the device with owner_id
-            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl, views: 0, comments: "[]", owner_id: ownerId });
+            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId });
     
             if (info) {
                 info = JSON.parse(info);
