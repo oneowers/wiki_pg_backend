@@ -26,9 +26,11 @@ const Device = sequelize.define('device', {
     rating: { type: DataTypes.INTEGER, defaultValue: 0 },
     img: { type: DataTypes.STRING, allowNull: false },
     views: { type: DataTypes.INTEGER, allowNull: false },
-    device_comments: { type: DataTypes.STRING, allowNull: true }, // Allow null values for 'device_comments'
+    device_comments: { type: DataTypes.STRING, allowNull: true },
+    description: { type: DataTypes.TEXT, allowNull: true }, // Change to TEXT
     owner_id: { type: DataTypes.INTEGER, allowNull: false },
 });
+
 
 
 const Type = sequelize.define('type', {
