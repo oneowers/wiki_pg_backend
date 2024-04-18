@@ -76,6 +76,17 @@ class DeviceController {
         )
         return res.json(device)
     }
+    
+    async getLatestDevices(req, res) {
+        const { n } = req.params; // Получаем количество устройств из параметров запроса
+        const latestDevices = await Device.findAll({
+            limit: n, // Указываем количество устройств, которые нужно получить
+            order: [['createdAt', 'DESC']], // Сортируем устройства по дате создания в убывающем порядке (чтобы получить последние)
+            include: [{ model: DeviceInfo, as: 'info' }] // Включаем информацию об устройствах
+        });
+        return res.json(latestDevices);
+    }
+    
 }
 
 module.exports = new DeviceController()

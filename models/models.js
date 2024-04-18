@@ -26,6 +26,9 @@ const Device = sequelize.define('device', {
     price: {type: DataTypes.INTEGER, allowNull: false},
     rating: {type: DataTypes.INTEGER, defaultValue: 0},
     img: {type: DataTypes.STRING, allowNull: false},
+    views: {type: DataTypes.INTEGER, allowNull: false},
+    comments: {type: DataTypes.STRING, allowNull: false},
+    owner_id: {type: DataTypes.INTEGER, allowNull: false},
 });
 
 const Type = sequelize.define('type', {
@@ -36,6 +39,8 @@ const Type = sequelize.define('type', {
 const Brand = sequelize.define('brand', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement:true},
     name: {type: DataTypes.STRING, unique: true, allowNull: false},
+    description: {type: DataTypes.STRING, allowNull: false},
+    color: {type: DataTypes.STRING, allowNull: false},
 });
 
 const Rating = sequelize.define('rating', {
@@ -76,6 +81,8 @@ DeviceInfo.belongsTo(Device)
 
 Type.belongsToMany(Brand, {through: TypeBrand})
 Brand.belongsToMany(Type, {through: TypeBrand})
+
+Device.belongsTo(User, { foreignKey: 'owner_id' });
 
 module.exports = {
     User,
