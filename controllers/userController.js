@@ -12,7 +12,7 @@ const generateJwt = (id, phone_number, role) => {
     )
 }
 
-// Функция для генерации и хэширования кода проверки
+
 async function generateAndHashCode() {
     // Генерация случайного числа (например, четырехзначного кода)
     const verificationCode = Math.floor(1000 + Math.random() * 9000);
