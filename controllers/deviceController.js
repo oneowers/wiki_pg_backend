@@ -10,9 +10,8 @@ const jwt = require('jsonwebtoken');
 class DeviceController {
     async create(req, res, next) {
         try {
-            let { name, price, brandId, typeId, info } = req.body;
+            let { name, price, brandId, typeId, info, description } = req.body;
     
-            // Extract the user ID from the JWT token
             const token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, process.env.SECRET_KEY);
             const ownerId = decoded.id;
@@ -33,7 +32,7 @@ class DeviceController {
             const fileUrl = blob.url;
     
             // Create the device with owner_id
-            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId });
+            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId, description });
     
             if (info) {
                 info = JSON.parse(info);
@@ -45,7 +44,6 @@ class DeviceController {
                     })
                 );
             }
-    
             return res.json({ "file": file, "fileName": fileName, "contentType": contentType, "blob": blob, "device": device });
         } catch (e) {
             next(ApiError.badRequest(e.message));

@@ -29,7 +29,7 @@ const Device = sequelize.define('device', {
     device_comments: { type: DataTypes.STRING, allowNull: true },
     description: { type: DataTypes.TEXT, allowNull: true }, // Change to TEXT
     owner_id: { type: DataTypes.INTEGER, allowNull: false },
-});
+}); 
 
 
 
