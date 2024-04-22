@@ -52,25 +52,42 @@ class DeviceController {
     
 
     async getAll(req, res) {
-        let {brandId, typeId, limit, page} = req.query
-        page = page || 1
-        limit = limit || 9
-        let offset = page * limit - limit
+        let { brandId, typeId, limit, page, sortBy } = req.query;
+        page = page || 1;
+        limit = limit || 9;
+        let offset = page * limit - limit;
         let devices;
-        if(!brandId && !typeId){
-            devices = await Device.findAndCountAll({limit, offset})
+    
+        const queryOptions = {
+            limit,
+            offset
+        };
+    
+        if (sortBy === 'createdAt' || sortBy === 'views') {
+            queryOptions.order = [[sortBy, 'DESC']];
+        } else {
+            // Если параметр sortBy не указан или имеет недопустимое значение,
+            // сортировать по дате создания
+            sortBy = 'createdAt';
+            queryOptions.order = [['createdAt', 'DESC']];
         }
-        if(brandId && !typeId){
-            devices = await Device.findAndCountAll({where:{brandId}, limit, offset})
+    
+        if (!brandId && !typeId) {
+            devices = await Device.findAndCountAll(queryOptions);
+        } else if (brandId && !typeId) {
+            devices = await Device.findAndCountAll({ ...queryOptions, where: { brandId } });
+        } else if (!brandId && typeId) {
+            devices = await Device.findAndCountAll({ ...queryOptions, where: { typeId } });
+        } else if (brandId && typeId) {
+            devices = await Device.findAndCountAll({ ...queryOptions, where: { brandId, typeId } });
         }
-        if(!brandId && typeId){
-            devices = await Device.findAndCountAll({where:{typeId}, limit, offset})
-        }
-        if(brandId && typeId){
-            devices = await Device.findAndCountAll({where:{brandId, typeId}, limit, offset})
-        }
-        return res.json(devices)
+    
+        return res.json(devices);
     }
+    
+    
+    
+    
 
     async getOne(req, res) {
         try {
@@ -101,15 +118,6 @@ class DeviceController {
         }
     }    
 
-    async getLatestDevices(req, res) {
-        const { n } = req.params; // Получаем количество устройств из параметров запроса
-        const latestDevices = await Device.findAll({
-            limit: n, // Указываем количество устройств, которые нужно получить
-            order: [['createdAt', 'DESC']], // Сортируем устройства по дате создания в убывающем порядке (чтобы получить последние)
-            include: [{ model: DeviceInfo, as: 'info' }] // Включаем информацию об устройствах
-        });
-        return res.json(latestDevices);
-    }
 
     async createComment(req, res, next) {
         const token = req.headers.authorization.split(' ')[1]
