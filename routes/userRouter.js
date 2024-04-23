@@ -14,7 +14,7 @@ router.get('/auth', authMiddleware, userControler.check);
 router.post('/send-verification-sms', userControler.sendVerificationSMS);
 router.post('/verify-code', userControler.verifyCode);
 
-router.get('/user', userControler.getUser);
+router.get('/user/:id', userControler.getUser);
 router.get('/all-user', checkRole('ADMIN'), userControler.getAllUsers);
 
 
