@@ -10,20 +10,18 @@ const User = sequelize.define("user", {
   last_code_time: { type: DataTypes.DATE },
   code_expiration_time: { type: DataTypes.DATE },
   BrandId: { type: DataTypes.INTEGER, allowNull: true },
+  last_name: { type: DataTypes.STRING, allowNull: false },
+  first_name: { type: DataTypes.STRING, allowNull: false },
+  profile_image: { type: DataTypes.STRING, allowNull: false },
+  country: { type: DataTypes.STRING, allowNull: true },
   
   cover_image: { type: DataTypes.STRING, allowNull: true },
-  country: { type: DataTypes.STRING, allowNull: true },
   street_address: { type: DataTypes.STRING, allowNull: true },
   city: { type: DataTypes.STRING, allowNull: true },
   state: { type: DataTypes.STRING, allowNull: true },
   zip: { type: DataTypes.INTEGER, allowNull: true },
   sms_message: { type: DataTypes.INTEGER, allowNull: true },
   description: { type: DataTypes.STRING, allowNull: true },
-
-
-  last_name: { type: DataTypes.STRING, allowNull: false },
-  first_name: { type: DataTypes.STRING, allowNull: false },
-  profile_image: { type: DataTypes.STRING, allowNull: false },
 });
 
 const Basket = sequelize.define("basket", {
@@ -56,6 +54,12 @@ const Brand = sequelize.define("brand", {
   name: { type: DataTypes.STRING, unique: true, allowNull: false },
   description: { type: DataTypes.STRING, allowNull: false },
   color: { type: DataTypes.STRING, allowNull: false },
+  cover_image: { type: DataTypes.STRING, allowNull: true },
+  street_address: { type: DataTypes.STRING, allowNull: true },
+  city: { type: DataTypes.STRING, allowNull: true },
+  state: { type: DataTypes.STRING, allowNull: true },
+  zip: { type: DataTypes.INTEGER, allowNull: true },
+  sms_message: { type: DataTypes.INTEGER, allowNull: true },
 });
 
 const Rating = sequelize.define("rating", {
