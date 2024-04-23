@@ -12,7 +12,6 @@ const generateJwt = (id, phone_number, role) => {
     )
 }
 
-// Функция для генерации и хэширования кода проверки
 async function generateAndHashCode() {
     // Генерация случайного числа (например, четырехзначного кода)
     const verificationCode = Math.floor(1000 + Math.random() * 9000);
@@ -21,17 +20,12 @@ async function generateAndHashCode() {
     return { code: verificationCode, hashedCode };
 }
 
-// Генерация времени истечения срока действия кода
 function generateExpirationTime() {
     const expirationTime = new Date(); // Текущее время
     expirationTime.setMinutes(expirationTime.getMinutes() + 2); // Например, код действителен в течение 10 минут
     return expirationTime;
 }
 
-// Предполагается, что у вас есть объект Sequelize 'User', представляющий модель пользователя
-// Далее, предполагается, что у вас есть метод 'update' для обновления записи в базе данных
-
-// Пример использования для сохранения информации о коде проверки в базе данных
 async function saveVerificationCodeToDatabase(userId, verificationCode, hashedCode, expirationTime) {
     try {
         await User.update(
@@ -44,7 +38,6 @@ async function saveVerificationCodeToDatabase(userId, verificationCode, hashedCo
     }
 }
 
-// Использование функций для генерации, шифрования и сохранения кода проверки
 async function generateAndSaveVerificationCode(userId) {
     // Генерация и хэширование кода проверки
     const { code, hashedCode } = await generateAndHashCode();
@@ -123,7 +116,6 @@ class UserControler {
             next(ApiError.internal('Произошла ошибка при отправке SMS.'));
         }
     }
-    
 
     async verifyCode(req, res, next) {
         const { phoneNumber, code } = req.body;
@@ -152,6 +144,34 @@ class UserControler {
         } catch (error) {
             console.error('Ошибка при изменении роли пользователя:', error);
             return res.json({ success: false, message: 'Произошла ошибка при изменении роли пользователя.' });
+        }
+    }
+    
+    async getUser(req, res, next) {
+        const userId = req.params.id; // Assuming the user ID is passed as a route parameter
+        
+        try {
+            const user = await User.findOne({ where: { id: userId } });
+            if (!user) {
+                return res.status(404).json({ success: false, message: 'User not found.' });
+            }
+            return res.json({ success: true, user: user });
+        } catch (error) {
+            console.error('Error while fetching user:', error);
+            return res.status(500).json({ success: false, message: 'Internal Server Error.' });
+        }
+    }
+
+    async getAllUsers(req, res, next) {
+        try {
+            const users = await User.findAll({
+                attributes: ['id', 'last_name', 'first_name', 'phone_number', 'BrandId'],
+            });
+
+            return res.json({ success: true, users: users });
+        } catch (error) {
+            console.error('Error while fetching users:', error);
+            return res.status(500).json({ success: false, message: 'Internal Server Error.' });
         }
     }
 }
