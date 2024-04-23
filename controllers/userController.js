@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const {User, Basket} = require('../models/models')
 const axios = require('axios');
-const jwt = require('jsonwebtoken');
 
 const generateJwt = (id, phone_number, role) => {
     return jwt.sign(
