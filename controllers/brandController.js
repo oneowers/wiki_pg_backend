@@ -1,6 +1,5 @@
 const { User, Brand } = require("../models/models");
 const jwt = require("jsonwebtoken");
-const ApiError = require("../error/ApiError");
 
 class BrandController {
   async create(req, res) {
