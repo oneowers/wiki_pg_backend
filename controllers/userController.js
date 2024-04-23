@@ -148,8 +148,11 @@ class UserControler {
     }
     
     async getUser(req, res, next) {
-        const userId = req.params.id; // Assuming the user ID is passed as a route parameter
         
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const userId = decoded.id;
+
         try {
             const user = await User.findOne({ where: { id: userId } });
             if (!user) {
