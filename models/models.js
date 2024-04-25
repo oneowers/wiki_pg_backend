@@ -10,9 +10,9 @@ const User = sequelize.define("user", {
   last_code_time: { type: DataTypes.DATE },
   code_expiration_time: { type: DataTypes.DATE },
   BrandId: { type: DataTypes.INTEGER, allowNull: true },
-  last_name: { type: DataTypes.STRING, allowNull: false },
-  first_name: { type: DataTypes.STRING, allowNull: false },
-  profile_image: { type: DataTypes.STRING, allowNull: false },
+  last_name: { type: DataTypes.STRING, allowNull: true },
+  first_name: { type: DataTypes.STRING, allowNull: true },
+  profile_image: { type: DataTypes.STRING, allowNull: true },
   country: { type: DataTypes.STRING, allowNull: true },
 });
 
