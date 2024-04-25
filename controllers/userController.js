@@ -79,8 +79,13 @@ class UserControler {
     }
 
     async check(req, res, next) {
-        const token = generateJwt(req.user.id, req.user.phone_number, req.user.role)
-        return res.json({token})
+        const {id} = req.body
+        const user = await User.findOne({where: {id}})
+        if(!user){
+            return next(ApiError.internal('Пользователь c таким не найден.'))
+        }else{
+        const token = generateJwt(user.id, user.phone_number, user.role)
+        return res.json({token})}
     }
 
     async sendVerificationSMS(req, res, next) {
