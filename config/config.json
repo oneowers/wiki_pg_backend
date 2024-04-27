@@ -1,38 +1,26 @@
 {
   "development": {
-    "username": "default",
-    "password": "MPAylx8JIG5Y",
-    "database": "verceldb",
-    "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
+    "username": "rokki",
+    "password": "postgres",
+    "database": "expo",
+    "host": "127.0.0.1",
     "port": 5432,
-    "dialect": "postgres",
-    "ssl": true, 
-    "dialectOptions": {
-      "ssl": { "require": true }
-    }
+    "dialect": "postgres"
   },
   "test": {
-    "username": "default",
-    "password": "MPAylx8JIG5Y",
-    "database": "verceldb",
-    "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
+    "username": "rokki",
+    "password": "postgres",
+    "database": "expo",
+    "host": "127.0.0.1",
     "port": 5432,
-    "dialect": "postgres",
-    "ssl": true,
-    "dialectOptions": {
-      "ssl": { "require": true }
-    }
+    "dialect": "postgres"
   },
   "production": {
-    "username": "default",
-    "password": "MPAylx8JIG5Y",
-    "database": "verceldb",
-    "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
+    "username": "rokki",
+    "password": "postgres",
+    "database": "expo",
+    "host": "127.0.0.1",
     "port": 5432,
-    "dialect": "postgres",
-    "ssl": true,
-    "dialectOptions": {
-      "ssl": { "require": true }
-    }
+    "dialect": "postgres"
   }
 }
