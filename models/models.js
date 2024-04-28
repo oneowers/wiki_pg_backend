@@ -14,7 +14,7 @@ const User = sequelize.define("user", {
   first_name: { type: DataTypes.STRING, allowNull: true },
   profile_image: { type: DataTypes.STRING, allowNull: true },
   country: { type: DataTypes.STRING, allowNull: true },
-});
+}); 
 
 const Basket = sequelize.define("basket", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
