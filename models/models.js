@@ -27,14 +27,13 @@ const BasketDevice = sequelize.define("basket_device", {
 const Device = sequelize.define("device", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, unique: true, allowNull: false },
-  price: { type: DataTypes.INTEGER, allowNull: false },
-  rating: { type: DataTypes.INTEGER, defaultValue: 0 },
   img: { type: DataTypes.STRING, allowNull: false },
   views: { type: DataTypes.INTEGER, allowNull: false },
   device_comments: { type: DataTypes.STRING, allowNull: true },
   description: { type: DataTypes.TEXT, allowNull: true }, // Change to TEXT
   owner_id: { type: DataTypes.INTEGER, allowNull: false },
 });
+
 
 const Type = sequelize.define("type", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -74,6 +73,34 @@ const Comment = sequelize.define("comment", {
 const TypeBrand = sequelize.define("type_brand", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
+
+const Furniture = sequelize.define("furniture", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  name: { type: DataTypes.STRING, allowNull: false },
+  type: { type: DataTypes.STRING, allowNull: false },
+  price: { type: DataTypes.INTEGER, allowNull: false },
+  rating: { type: DataTypes.INTEGER, allowNull: false },
+  img: { type: DataTypes.STRING, allowNull: false },
+  description: { type: DataTypes.TEXT, allowNull: false },
+  owner_id: { type: DataTypes.INTEGER, allowNull: false },
+});
+
+const Order = sequelize.define("order", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  scene_size_x: { type: DataTypes.INTEGER, allowNull: false },
+  scene_size_y: { type: DataTypes.INTEGER, allowNull: false },
+  furniture_list: { type: DataTypes.JSON, allowNull: false },
+});
+
+Order.belongsTo(User, { foreignKey: "user_id" });
+Order.belongsTo(Brand, { foreignKey: "brand_id" });
+
+User.hasMany(Order);
+Brand.hasMany(Order);
+Order.belongsToMany(Furniture, { through: "OrderFurniture" });
+Furniture.belongsToMany(Order, { through: "OrderFurniture" });
+
+
 
 User.hasOne(Basket);
 Basket.belongsTo(User);
@@ -116,4 +143,6 @@ module.exports = {
   DeviceInfo,
   Comment,
   TypeBrand,
+  Furniture,
+  Order,
 };
