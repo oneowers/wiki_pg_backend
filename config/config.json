@@ -6,11 +6,11 @@
     "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
     "port": 5432,
     "dialect": "postgres",
-    "schema": "public",
     "ssl": true, 
     "dialectOptions": {
       "ssl": { "require": true }
-    }
+    },
+    "schema": "public"
   },
   "test": {
     "username": "default",
@@ -19,11 +19,11 @@
     "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
     "port": 5432,
     "dialect": "postgres",
-    "schema": "public",
     "ssl": true,
     "dialectOptions": {
       "ssl": { "require": true }
-    }
+    },
+    "schema": "public"
   },
   "production": {
     "username": "default",
@@ -32,10 +32,10 @@
     "host": "ep-raspy-king-a4lqx58s-pooler.us-east-1.aws.neon.tech",
     "port": 5432,
     "dialect": "postgres",
-    "schema": "public",
     "ssl": true,
     "dialectOptions": {
       "ssl": { "require": true }
-    }
+    },
+    "schema": "public"
   }
 }
