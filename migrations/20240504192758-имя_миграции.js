@@ -1,7 +1,12 @@
+'use strict';
 const { DataTypes } = require("sequelize");
-const sequelize = require("../db");
 
-const User = sequelize.define("user", {
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    // Create Users table
+
+    
+await queryInterface.createTable("user", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   phone_number: { type: DataTypes.STRING, unique: true, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
@@ -16,15 +21,15 @@ const User = sequelize.define("user", {
   country: { type: DataTypes.STRING, allowNull: true },
 }); 
 
-const Basket = sequelize.define("basket", {
+await queryInterface.createTable("basket", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
 
-const BasketDevice = sequelize.define("basket_device", {
+await queryInterface.createTable("basket_device", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
 
-const Device = sequelize.define("device", {
+await queryInterface.createTable("device", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, unique: true, allowNull: false },
   img: { type: DataTypes.STRING, allowNull: false },
@@ -35,12 +40,12 @@ const Device = sequelize.define("device", {
 });
 
 
-const Type = sequelize.define("type", {
+await queryInterface.createTable("type", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, unique: true, allowNull: false },
 });
 
-const Brand = sequelize.define("brand", {
+await queryInterface.createTable("brand", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, unique: true, allowNull: false },
   description: { type: DataTypes.STRING, allowNull: false },
@@ -53,28 +58,28 @@ const Brand = sequelize.define("brand", {
   sms_message: { type: DataTypes.INTEGER, allowNull: true },
 });
 
-const Rating = sequelize.define("rating", {
+await queryInterface.createTable("rating", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   rating: { type: DataTypes.INTEGER, allowNull: false },
 });
 
-const DeviceInfo = sequelize.define("device_info", {
+await queryInterface.createTable("device_info", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.STRING, allowNull: false },
 });
 
-const Comment = sequelize.define("comment", {
+await queryInterface.createTable("comment", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   user_id: { type: DataTypes.INTEGER, allowNull: false },
   text: { type: DataTypes.STRING, allowNull: false },
 });
 
-const TypeBrand = sequelize.define("type_brand", {
+await queryInterface.createTable("type_brand", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
 
-const Furniture = sequelize.define("furniture", {
+await queryInterface.createTable("furniture", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, allowNull: false },
   type: { type: DataTypes.STRING, allowNull: false },
@@ -85,66 +90,27 @@ const Furniture = sequelize.define("furniture", {
   owner_id: { type: DataTypes.INTEGER, allowNull: false },
 });
 
-const Order = sequelize.define("оrder", {
+await queryInterface.createTable("order", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   scene_size_x: { type: DataTypes.INTEGER, allowNull: false },
   scene_size_y: { type: DataTypes.INTEGER, allowNull: false },
   furniture_list: { type: DataTypes.JSON, allowNull: false },
-  user_id: { type: DataTypes.INTEGER, allowNull: false }, // Проверьте, что это поле названо правильно
-  brand_id: { type: DataTypes.INTEGER, allowNull: false }, // Проверьте, что это поле названо правильно
 });
-
-Order.belongsTo(User, { foreignKey: "user_id" });
-Order.belongsTo(Brand, { foreignKey: "brand_id" });
-
-User.hasMany(Order);
-Brand.hasMany(Order);
-Order.belongsToMany(Furniture, { through: "OrderFurniture" });
-Furniture.belongsToMany(Order, { through: "OrderFurniture" });
-
-
-
-User.hasOne(Basket);
-Basket.belongsTo(User);
-
-User.hasMany(Rating);
-Rating.belongsTo(User);
-
-Type.hasMany(Device);
-Device.belongsTo(Type);
-
-Brand.hasMany(Device);
-Device.belongsTo(Brand);
-
-Device.hasMany(Rating);
-Rating.belongsTo(Device);
-
-Device.hasMany(BasketDevice);
-BasketDevice.belongsTo(Device);
-
-Device.hasMany(DeviceInfo, { as: "info" });
-DeviceInfo.belongsTo(Device);
-
-Device.hasMany(Comment, { foreignKey: "device_id" });
-Comment.belongsTo(Device, { foreignKey: "device_id" });
-
-Type.belongsToMany(Brand, { through: TypeBrand });
-Brand.belongsToMany(Type, { through: TypeBrand });
-
-Device.belongsTo(User, { foreignKey: "owner_id" });
-User.belongsTo(Brand, { foreignKey: "BrandId" });
-
-module.exports = {
-  User,
-  Basket,
-  BasketDevice,
-  Device,
-  Type,
-  Brand,
-  Rating,
-  DeviceInfo,
-  Comment,
-  TypeBrand,
-  Furniture,
-  Order,
+  },
+  down: async (queryInterface, Sequelize) => {
+    // Drop all tables in reverse order
+    await queryInterface.dropTable('user');
+    await queryInterface.dropTable('basket');
+    await queryInterface.dropTable('basket_device');
+    await queryInterface.dropTable('device');
+    await queryInterface.dropTable('type');
+    await queryInterface.dropTable('brand');
+    await queryInterface.dropTable('rating');
+    await queryInterface.dropTable('device_info');
+    await queryInterface.dropTable('comment');
+    await queryInterface.dropTable('type_brand');
+    await queryInterface.dropTable('furniture');
+    await queryInterface.dropTable('order');
+    // Drop other tables similarly...
+  }
 };
