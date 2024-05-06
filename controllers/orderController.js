@@ -14,7 +14,6 @@ class OrderController {
   async create(req, res) {
     try {
       const { scene_size_x, scene_size_y, furniture_list, user_id, brand_id } = req.body;
-      const parsedFurnitureList = JSON.parse(furniture_list);
       const order = await Order.create({ scene_size_x, scene_size_y, furniture_list: parsedFurnitureList, user_id, brand_id });
       return res.json(order);
     } catch (error) {

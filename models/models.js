@@ -90,6 +90,8 @@ const Order = sequelize.define("order", {
   scene_size_x: { type: DataTypes.INTEGER, allowNull: false },
   scene_size_y: { type: DataTypes.INTEGER, allowNull: false },
   furniture_list: { type: DataTypes.JSON, allowNull: false },
+  user_id: { type: DataTypes.INTEGER, allowNull: false },
+  brand_id: { type: DataTypes.INTEGER, allowNull: false },
 });
 
 Order.belongsTo(User, { foreignKey: "user_id" });
