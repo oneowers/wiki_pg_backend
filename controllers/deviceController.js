@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 class DeviceController {
     async create(req, res, next) {
         try {
-            let { name, price, brandId, typeId, info, description } = req.body;
+            let { name, brandId, typeId, info, description } = req.body;
     
             const token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, process.env.SECRET_KEY);
@@ -32,7 +32,7 @@ class DeviceController {
             const fileUrl = blob.url;
     
             // Create the device with owner_id
-            const device = await Device.create({ name, price, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId, description });
+            const device = await Device.create({ name, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId, description });
     
             if (info) {
                 info = JSON.parse(info);
