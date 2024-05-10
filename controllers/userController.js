@@ -84,7 +84,7 @@ class UserControler {
         if(!user){
             return next(ApiError.internal('Пользователь c таким не найден.'))
         }
-        const token = generateJwt(user)
+        const token = generateJwt(user.id, user.phone_number, user.role)
         return res.json({token})
     }
 
