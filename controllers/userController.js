@@ -49,7 +49,7 @@ async function generateAndSaveVerificationCode(userId) {
 
 class UserControler {
     async registration(req, res, next) {
-        const {phone_number, password, role} = req.body
+        const {phone_number, password, role, name} = req.body
         if(!phone_number || !password) {
             return next(ApiError.badRequest('Некоректный номер телефона или пароль.'))
         }
@@ -58,7 +58,7 @@ class UserControler {
             return next(ApiError.badRequest('Пользователь c этим номером уже связан.'))
         }
         const hashPassword = await bcrypt.hash(password, 5)
-        const user = await User.create({phone_number, role: 'GHOST', password: hashPassword})
+        const user = await User.create({phone_number, role: 'GHOST', password: hashPassword, first_name: name})
         const basket = await Basket.create({userId: user.id})
         const token = generateJwt(user.id, user.phone_number, user.role)
         return res.json({token})
@@ -84,7 +84,7 @@ class UserControler {
         if(!user){
             return next(ApiError.internal('Пользователь c таким не найден.'))
         }
-        const token = generateJwt(user.id, user.phone_number, user.role)
+        const token = generateJwt(user)
         return res.json({token})
     }
 
