@@ -16,6 +16,16 @@ const User = sequelize.define("user", {
   country: { type: DataTypes.STRING, allowNull: true },
 }); 
 
+const Participant = sequelize.define("participant", {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  state: { type: DataTypes.STRING, allowNull: false },
+  full_name: { type: DataTypes.STRING, allowNull: false },
+  phone_number: { type: DataTypes.STRING, unique: true, allowNull: false },
+});
+
+module.exports = Participant;
+
+
 const Basket = sequelize.define("basket", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
