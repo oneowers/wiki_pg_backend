@@ -1,6 +1,6 @@
 // participantsController.js
 
-const {Participant} = require("../models/models");
+const {Participant} = require('../models/models');
 
 // Метод для создания нового участника
 async function createParticipant(req, res) {

@@ -157,6 +157,7 @@ module.exports = {
   TypeBrand,
   Furniture,
   Order,
+  Participant,
 };
 
 
