@@ -1,20 +1,24 @@
 // participantsController.js
 
-const {Participant} = require('../models/models');
+const { Participant } = require("../models/models");
 
-// Метод для создания нового участника
+// Method to create a new participant
 async function createParticipant(req, res) {
   try {
     const { state, full_name, phone_number } = req.body;
     const participant = await Participant.create({ state, full_name, phone_number });
     res.status(201).json(participant);
   } catch (error) {
-    console.error("Error creating participant:", error);
-    res.status(500).json({ error: "Could not create participant" });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      res.status(400).json({ error: "A participant with this phone number already exists." });
+    } else {
+      console.error("Error creating participant:", error);
+      res.status(500).json({ error: "Could not create participant" });
+    }
   }
 }
 
-// Метод для получения списка всех участников
+// Method to get all participants
 async function getAllParticipants(req, res) {
   try {
     const participants = await Participant.findAll();
