@@ -10,13 +10,20 @@ async function createParticipant(req, res) {
     res.status(201).json(participant);
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
-      res.status(400).json({ error: "A participant with this phone number already exists." });
+      let errorMessage = "A participant with this ";
+      if (error.fields.phone_number) {
+        errorMessage += "phone number already exists.";
+      } else if (error.fields.email) {
+        errorMessage += "email already exists.";
+      }
+      res.status(400).json({ error: errorMessage });
     } else {
       console.error("Error creating participant:", error);
       res.status(500).json({ error: "Could not create participant" });
     }
   }
 }
+
 
 // Method to get all participants
 async function getAllParticipants(req, res) {
