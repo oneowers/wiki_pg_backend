@@ -20,8 +20,8 @@ const Participant = sequelize.define("participant", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   state: { type: DataTypes.STRING, allowNull: false },
   full_name: { type: DataTypes.STRING, allowNull: false },
-  phone_number: { type: DataTypes.STRING, unique: true, allowNull: false },
-  email: { type: DataTypes.STRING, unique: true, allowNull: true },
+  phone_number: { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: true },
   company: { type: DataTypes.STRING, allowNull: true } // Add the company field
 });
 
