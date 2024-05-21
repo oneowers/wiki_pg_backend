@@ -21,8 +21,10 @@ const Participant = sequelize.define("participant", {
   state: { type: DataTypes.STRING, allowNull: false },
   full_name: { type: DataTypes.STRING, allowNull: false },
   phone_number: { type: DataTypes.STRING, unique: true, allowNull: false },
-  email: { type: DataTypes.STRING, unique: true, allowNull: true } // Add the email field
+  email: { type: DataTypes.STRING, unique: true, allowNull: true },
+  company: { type: DataTypes.STRING, allowNull: true } // Add the company field
 });
+
 
 // Run the migration command to apply the changes
 sequelize.sync();
