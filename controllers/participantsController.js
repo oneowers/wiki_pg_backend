@@ -5,8 +5,8 @@ const { Participant } = require("../models/models");
 // Method to create a new participant
 async function createParticipant(req, res) {
   try {
-    const { state, full_name, phone_number } = req.body;
-    const participant = await Participant.create({ state, full_name, phone_number });
+    const { state, full_name, phone_number, email } = req.body;
+    const participant = await Participant.create({ state, full_name, phone_number, email });
     res.status(201).json(participant);
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
