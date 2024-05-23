@@ -1,5 +1,3 @@
-// participantsController.js
-
 const { Participant } = require("../models/models");
 
 // Method to create a new participant
@@ -24,12 +22,28 @@ async function createParticipant(req, res) {
   }
 }
 
-
-// Method to get all participants
+// Method to get all participants with pagination
 async function getAllParticipants(req, res) {
   try {
-    const participants = await Participant.findAll();
-    res.status(200).json(participants);
+    // Get page and limit from query parameters, defaulting to page 1 and limit 10 if not provided
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Participant.findAndCountAll({
+      offset: offset,
+      limit: limit
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(200).json({
+      totalItems: count,
+      totalPages: totalPages,
+      currentPage: page,
+      items: rows
+    });
   } catch (error) {
     console.error("Error getting participants:", error);
     res.status(500).json({ error: "Could not retrieve participants" });
