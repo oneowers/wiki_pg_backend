@@ -182,6 +182,46 @@ class UserControler {
             return res.status(500).json({ success: false, message: 'Internal Server Error.' });
         }
     }
+
+    async updateProfile(req, res, next) {
+        try {
+            const { id, first_name, profile_image, role } = req.body;
+            
+            if (!id) {
+                return next(ApiError.badRequest('Укажите ID пользователя.'));
+            }
+
+            const user = await User.findOne({ where: { id } });
+            if (!user) {
+                return next(ApiError.badRequest('Пользователь не найден.'));
+            }
+
+            // Обновляем поля, если они переданы
+            if (first_name !== undefined) user.first_name = first_name;
+            if (profile_image !== undefined) user.profile_image = profile_image;
+            if (role !== undefined) user.role = role;
+
+            await user.save();
+
+            // Создаем новый токен со свежими данными профиля
+            const token = jwt.sign(
+                {
+                    id: user.id, 
+                    phone_number: user.phone_number, 
+                    role: user.role,
+                    first_name: user.first_name,
+                    profile_image: user.profile_image
+                }, 
+                process.env.SECRET_KEY,
+                {expiresIn: '24h'}
+            );
+
+            return res.json({ success: true, token, user });
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            return next(ApiError.internal('Ошибка при обновлении профиля.'));
+        }
+    }
 }
 
 module.exports = new UserControler()

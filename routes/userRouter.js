@@ -17,5 +17,7 @@ router.post('/verify-code', userControler.verifyCode);
 router.get('/user', userControler.getUser);
 router.get('/all-user', checkRole('ADMIN'), userControler.getAllUsers);
 
+router.put('/update', authMiddleware, userControler.updateProfile);
+
 
 module.exports = router;
