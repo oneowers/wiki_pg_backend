@@ -17,12 +17,22 @@ class DeviceController {
             const ownerId = decoded.id;
     
             //FOR LOCAL
-            const {img} = req.files;
-            let fileName = uuid.v4() + "." + img.name.split('.').pop();
-            img.mv(path.resolve(__dirname, '..', 'static', fileName));
+            // const {img} = req.files;
+            // let fileName = uuid.v4() + "." + img.name.split('.').pop();
+            // img.mv(path.resolve(__dirname, '..', 'static', fileName));
+    
+            //FOR VERCEL
+            const file = req.files.img;
+            const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Generate a unique file name
+            const contentType = file.mimetype || 'text/plain';
+            const blob = await put(fileName, file.data, {
+                contentType,
+                access: 'public'
+            });
+            const fileUrl = blob.url;
     
             // Create the device with owner_id
-            const device = await Device.create({ name, brandId, typeId, img: fileName, views: 0, device_comments: "[]", owner_id: ownerId, description });    
+            const device = await Device.create({ name, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId, description });    
             if (info) {
                 info = JSON.parse(info);
                 info.forEach(i =>
