@@ -4,9 +4,9 @@ const jwt = require('jsonwebtoken')
 const {User, Basket} = require('../models/models')
 const axios = require('axios');
 
-const generateJwt = (id, phone_number, role) => {
+const generateJwt = (id, phone_number, role, first_name, profile_image) => {
     return jwt.sign(
-        {id, phone_number, role}, 
+        {id, phone_number, role, first_name, profile_image}, 
         process.env.SECRET_KEY,
         {expiresIn: '24h'}
     )
@@ -60,7 +60,7 @@ class UserControler {
         const hashPassword = await bcrypt.hash(password, 5)
         const user = await User.create({phone_number, role: 'GHOST', password: hashPassword, first_name})
         const basket = await Basket.create({userId: user.id})
-        const token = generateJwt(user.id)
+        const token = generateJwt(user.id, user.phone_number, user.role, user.first_name, user.profile_image)
         return res.json({token})
     }
 
@@ -74,7 +74,7 @@ class UserControler {
         if(!comparePassword) {
             return next(ApiError.internal('Указанный пароль неверный.'))
         }
-        const token = generateJwt(user.id)
+        const token = generateJwt(user.id, user.phone_number, user.role, user.first_name, user.profile_image)
         return res.json({token})
     }
 
@@ -84,7 +84,7 @@ class UserControler {
         if(!user){
             return next(ApiError.internal('Пользователь c таким не найден.'))
         }
-        const token = generateJwt(user)
+        const token = generateJwt(user.id, user.phone_number, user.role, user.first_name, user.profile_image)
         return res.json({token})
     }
 
@@ -144,7 +144,7 @@ class UserControler {
         // Меняем роль пользователя на "USER"
         try {
             if(user.role != "ADMIN") await user.update({ role: 'USER' });
-            const token = generateJwt(user.id, user.phone_number, 'USER')
+            const token = generateJwt(user.id, user.phone_number, user.role, user.first_name, user.profile_image)
             return res.json({ token: token, success: true, message: 'Код подтверждения верен. Роль пользователя изменена на "USER".' });
         } catch (error) {
             console.error('Ошибка при изменении роли пользователя:', error);
