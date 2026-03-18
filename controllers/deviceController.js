@@ -22,7 +22,10 @@ class DeviceController {
             // img.mv(path.resolve(__dirname, '..', 'static', fileName));
     
             //FOR VERCEL
-            const file = req.files.img;
+            const file = req.files?.img;
+            if (!file) {
+                 return next(ApiError.badRequest('Изображение обязательно для заполнения!'));
+            }
             const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Generate a unique file name
             const contentType = file.mimetype || 'text/plain';
             const blob = await put(fileName, file.data, {
