@@ -3,8 +3,19 @@ const sequelize = require("../db");
 
 const User = sequelize.define("user", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  phone_number: { type: DataTypes.STRING, unique: true, allowNull: false },
-  password: { type: DataTypes.STRING, allowNull: false },
+  
+  // Делаем номер телефона необязательным, так как у Google-пользователей его изначально нет
+  phone_number: { type: DataTypes.STRING, unique: true, allowNull: true },
+  
+  // Добавляем email (Google возвращает именно его)
+  email: { type: DataTypes.STRING, unique: true, allowNull: true },
+  
+  // Добавляем ID из Google для надежной связи (если юзер сменит email в Google)
+  google_id: { type: DataTypes.STRING, unique: true, allowNull: true },
+  
+  // Делаем пароль необязательным (для Google авторизации он не нужен)
+  password: { type: DataTypes.STRING, allowNull: true },
+  
   role: { type: DataTypes.STRING, defaultValue: "GHOST" },
   last_code: { type: DataTypes.STRING },
   last_code_time: { type: DataTypes.DATE },
@@ -14,7 +25,7 @@ const User = sequelize.define("user", {
   first_name: { type: DataTypes.STRING, allowNull: true },
   profile_image: { type: DataTypes.STRING, allowNull: true },
   country: { type: DataTypes.STRING, allowNull: true },
-}); 
+});
 
 const Participant = sequelize.define("participant", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
