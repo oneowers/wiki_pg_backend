@@ -19,5 +19,8 @@ router.get('/all-user', checkRole('ADMIN'), userControler.getAllUsers);
 
 router.put('/update', authMiddleware, userControler.updateProfile);
 
+// ---> Добавьте этот роут для Google <---
+router.post('/google', userController.googleAuth)
+
 
 module.exports = router;
