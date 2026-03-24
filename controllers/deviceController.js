@@ -125,22 +125,21 @@ class DeviceController {
         try {
             const { device_id, text } = req.body;
 
-            // ВОТ ВАШ USER ID! Бэкенд сам достал его из токена
+            // Теперь это не упадет, потому что authMiddleware отработает до этой функции
             const userId = req.user.id;
 
-            // Теперь сохраняем в базу данных
+            // Используем модель Comment (а не DeviceComment)
             const comment = await Comment.create({
-                deviceId: device_id,
+                device_id: device_id, // Судя по вашему коду, у вас в БД поле называется именно так
                 userId: userId,
                 text: text
             });
 
             return res.json(comment);
         } catch (e) {
-            next(ApiError.badRequest(e.message));
+            return res.status(400).json({ message: e.message });
         }
     }
-
     async getComments(req, res, next) {
         try {
             const { device_id } = req.params;
