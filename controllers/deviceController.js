@@ -153,10 +153,11 @@ class DeviceController {
 
 
 
-    async update(req, res, next) {
+async update(req, res, next) {
         try {
             const { id } = req.params;
-            let { name, brandId, typeId, info, description } = req.body;
+            // Добавили img сюда, чтобы ловить текстовый URL с фронтенда
+            let { name, brandId, typeId, info, description, img } = req.body;
 
             const device = await Device.findByPk(id);
             if (!device) {
@@ -169,16 +170,21 @@ class DeviceController {
             if (typeId) device.typeId = typeId;
             if (description !== undefined) device.description = description;
 
-            // Handle image update if a new image was passed (simplified: we expect file form data similar to create)
+            // --- ГИБКАЯ ОБРАБОТКА КАРТИНКИ ---
             const file = req.files?.img;
+            
             if (file) {
+                // 1. Если пришел реальный файл (задел под Vercel Blob)
                 const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`;
                 const contentType = file.mimetype || 'text/plain';
                 const blob = await put(fileName, file.data, {
                     contentType,
                     access: 'public'
                 });
-                device.img = blob.url;
+                device.img = blob.url; // Сохраняем сгенерированный URL от Vercel
+            } else if (img && typeof img === 'string') {
+                // 2. Если файла нет, но пользователь передал прямую ссылку (строку)
+                device.img = img;
             }
 
             await device.save();
@@ -189,12 +195,15 @@ class DeviceController {
                 // First delete old info
                 await DeviceInfo.destroy({ where: { deviceId: id } });
                 // Then create new info
-                info.forEach(i =>
-                    DeviceInfo.create({
-                        title: i.title,
-                        description: i.description,
-                        deviceId: id
-                    })
+                // Используем Promise.all для корректного ожидания всех асинхронных операций
+                await Promise.all(
+                    info.map(i =>
+                        DeviceInfo.create({
+                            title: i.title,
+                            description: i.description,
+                            deviceId: id
+                        })
+                    )
                 );
             }
 
