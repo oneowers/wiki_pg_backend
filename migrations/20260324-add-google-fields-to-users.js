@@ -29,7 +29,6 @@ module.exports = {
       allowNull: true,
     });
 
-    // Делаем password необязательным (для Google-авторизации)
     await queryInterface.changeColumn('users', 'password', {
       type: Sequelize.STRING,
       allowNull: true,
