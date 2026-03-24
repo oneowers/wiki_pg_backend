@@ -120,18 +120,14 @@ class DeviceController {
         }
     }
 
-
     async createComment(req, res, next) {
         try {
             const { device_id, text } = req.body;
-
-            // Теперь это не упадет, потому что authMiddleware отработает до этой функции
             const userId = req.user.id;
 
-            // Используем модель Comment (а не DeviceComment)
             const comment = await Comment.create({
-                device_id: device_id, // Судя по вашему коду, у вас в БД поле называется именно так
-                userId: userId,
+                device_id: device_id,
+                user_id: userId, // <-- ИСПРАВЛЕНО: теперь точно совпадает с базой данных
                 text: text
             });
 
@@ -140,6 +136,7 @@ class DeviceController {
             return res.status(400).json({ message: e.message });
         }
     }
+
     async getComments(req, res, next) {
         try {
             const { device_id } = req.params;
