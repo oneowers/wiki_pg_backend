@@ -152,7 +152,74 @@ class DeviceController {
     
 
     
-    
+    async update(req, res, next) {
+        try {
+            const { id } = req.params;
+            let { name, brandId, typeId, info, description } = req.body;
+            
+            const device = await Device.findByPk(id);
+            if (!device) {
+                return res.status(404).json({ message: 'Device not found' });
+            }
+
+            // Update simple fields
+            if (name) device.name = name;
+            if (brandId) device.brandId = brandId;
+            if (typeId) device.typeId = typeId;
+            if (description !== undefined) device.description = description;
+
+            // Handle image update if a new image was passed (simplified: we expect file form data similar to create)
+            const file = req.files?.img;
+            if (file) {
+                 const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; 
+                 const contentType = file.mimetype || 'text/plain';
+                 const blob = await put(fileName, file.data, {
+                     contentType,
+                     access: 'public'
+                 });
+                 device.img = blob.url;
+            }
+
+            await device.save();
+
+            // Handle info updates
+            if (info) {
+                info = JSON.parse(info);
+                // First delete old info
+                await DeviceInfo.destroy({ where: { deviceId: id } });
+                // Then create new info
+                info.forEach(i =>
+                    DeviceInfo.create({
+                        title: i.title,
+                        description: i.description,
+                        deviceId: id
+                    })
+                );
+            }
+
+            return res.json({ device });
+        } catch (e) {
+            next(ApiError.badRequest(e.message));
+        }
+    }
+
+    async delete(req, res, next) {
+        try {
+            const { id } = req.params;
+            const device = await Device.findByPk(id);
+            if (!device) {
+                return res.status(404).json({ message: 'Device not found' });
+            }
+
+            await DeviceInfo.destroy({ where: { deviceId: id } });
+            await Comment.destroy({ where: { device_id: id } });
+            await device.destroy();
+
+            return res.json({ message: 'Device deleted successfully' });
+        } catch (e) {
+            next(ApiError.badRequest(e.message));
+        }
+    }
 }
 
 module.exports = new DeviceController()
