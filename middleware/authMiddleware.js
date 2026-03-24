@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken')
 
+const SECRET_KEY = process.env.SECRET_KEY || 'secret_911';
+
 module.exports = function (req, res, next){
     if(req.method === "OPTIONS") {
         next()
@@ -9,7 +11,7 @@ module.exports = function (req, res, next){
         if(!token){
             return res.status(401).json({message: "Не авторизован"})
         }
-        const decoded = jwt.verify(token, process.env.SECRET_KEY) 
+        const decoded = jwt.verify(token, SECRET_KEY) 
         req.user = decoded
         next()
     }catch(e){

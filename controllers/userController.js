@@ -4,10 +4,16 @@ const jwt = require('jsonwebtoken')
 const {User, Basket} = require('../models/models')
 const axios = require('axios');
 
+// Защита: если SECRET_KEY не задан в env — используем запасной ключ
+const SECRET_KEY = process.env.SECRET_KEY || 'secret_911';
+if (!process.env.SECRET_KEY) {
+    console.warn('[WARN] SECRET_KEY не задан в переменных окружения! Используется запасной ключ.');
+}
+
 const generateJwt = (id, phone_number, role, first_name, profile_image) => {
     return jwt.sign(
         {id, phone_number, role, first_name, profile_image}, 
-        process.env.SECRET_KEY,
+        SECRET_KEY,
         {expiresIn: '24h'}
     )
 }
@@ -203,7 +209,7 @@ class UserControler {
     async getUser(req, res, next) {
         
         const token = req.headers.authorization.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const decoded = jwt.verify(token, SECRET_KEY);
         const userId = decoded.id;
 
         try {
@@ -260,7 +266,7 @@ class UserControler {
                     first_name: user.first_name,
                     profile_image: user.profile_image
                 }, 
-                process.env.SECRET_KEY,
+                SECRET_KEY,
                 {expiresIn: '24h'}
             );
 
