@@ -206,6 +206,7 @@ async update(req, res, next) {
                     )
                 );
             }
+            
 
             return res.json({ device });
         } catch (e) {
