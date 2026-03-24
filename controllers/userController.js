@@ -73,12 +73,18 @@ class UserControler {
                 const hashPassword = await bcrypt.hash(sub + email, 5);
                 user = await User.create({
                     email: email,
+                    google_id: sub,
                     first_name: given_name,
                     profile_image: picture,
                     role: 'USER',
                     password: hashPassword,
                 });
                 await Basket.create({ userId: user.id });
+            } else {
+                // Update google_id if the user previously registered without it
+                if (!user.google_id) {
+                    await user.update({ google_id: sub });
+                }
             }
 
             const jwtToken = generateJwt(user.id, user.phone_number, user.role, user.first_name, user.profile_image);
