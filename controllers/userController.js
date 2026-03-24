@@ -12,60 +12,7 @@ const generateJwt = (id, phone_number, role, first_name, profile_image) => {
     )
 }
 
-async googleAuth(req, res, next) {
-        try {
-            const { token } = req.body;
-            if (!token) {
-                return next(ApiError.badRequest('Google токен не предоставлен.'));
-            }
 
-            // 1. Делаем запрос к Google API для получения данных пользователя по токену
-            const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            // Google возвращает: email, given_name (имя), picture (фото), sub (уникальный ID)
-            const { email, given_name, picture, sub } = data;
-
-            if (!email) {
-                return next(ApiError.badRequest('Не удалось получить email от Google.'));
-            }
-
-            // 2. Ищем пользователя по email
-            // (ВНИМАНИЕ: убедитесь, что добавили поле 'email' в модель User)
-            let user = await User.findOne({ where: { email } });
-
-            if (!user) {
-                // 3. Если пользователя нет, регистрируем его
-                // Генерируем случайный пароль, так как авторизация идет через Google
-                const hashPassword = await bcrypt.hash(sub + email, 5); 
-
-                user = await User.create({
-                    email: email,
-                    first_name: given_name,
-                    profile_image: picture,
-                    role: 'USER', // Сразу даем права USER, т.к. Google-аккаунт уже подтвержден
-                    password: hashPassword,
-                    
-                    // Если phone_number обязателен в БД, можно передать временную заглушку:
-                    // phone_number: `g_${sub.slice(0, 10)}` 
-                });
-
-                // Создаем корзину
-                await Basket.create({ userId: user.id });
-            }
-
-            // 4. Генерируем ваш стандартный JWT токен
-            const jwtToken = generateJwt(user.id, user.phone_number, user.role, user.first_name, user.profile_image);
-            
-            return res.json({ success: true, token: jwtToken, user, message: 'Синхронизация с Google успешна' });
-
-        } catch (error) {
-            console.error('Ошибка авторизации через Google:', error);
-            // Обработка ошибки истекшего/неверного токена от Google
-            return next(ApiError.internal('Ошибка валидации токена Google.'));
-        }
-    }
 
 async function generateAndHashCode() {
     // Генерация случайного числа (например, четырехзначного кода)
@@ -103,6 +50,46 @@ async function generateAndSaveVerificationCode(userId) {
 
 
 class UserControler {
+    async googleAuth(req, res, next) {
+        try {
+            const { token } = req.body;
+            if (!token) {
+                return next(ApiError.badRequest('Google токен не предоставлен.'));
+            }
+
+            const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const { email, given_name, picture, sub } = data;
+
+            if (!email) {
+                return next(ApiError.badRequest('Не удалось получить email от Google.'));
+            }
+
+            let user = await User.findOne({ where: { email } });
+
+            if (!user) {
+                const hashPassword = await bcrypt.hash(sub + email, 5);
+                user = await User.create({
+                    email: email,
+                    first_name: given_name,
+                    profile_image: picture,
+                    role: 'USER',
+                    password: hashPassword,
+                });
+                await Basket.create({ userId: user.id });
+            }
+
+            const jwtToken = generateJwt(user.id, user.phone_number, user.role, user.first_name, user.profile_image);
+            return res.json({ success: true, token: jwtToken, user, message: 'Синхронизация с Google успешна' });
+
+        } catch (error) {
+            console.error('Ошибка авторизации через Google:', error);
+            return next(ApiError.internal('Ошибка валидации токена Google.'));
+        }
+    }
+
     async registration(req, res, next) {
         const {phone_number, password, role, first_name} = req.body
         if(!phone_number || !password) {
