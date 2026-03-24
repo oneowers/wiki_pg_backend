@@ -85,8 +85,8 @@ class UserControler {
             return res.json({ success: true, token: jwtToken, user, message: 'Синхронизация с Google успешна' });
 
         } catch (error) {
-            console.error('Ошибка авторизации через Google:', error);
-            return next(ApiError.internal('Ошибка валидации токена Google.'));
+            console.error('Ошибка авторизации через Google:', error.message || error);
+            return next(ApiError.internal(`Ошибка валидации токена Google: ${error.message}`));
         }
     }
 
