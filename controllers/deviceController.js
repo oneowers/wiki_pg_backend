@@ -123,19 +123,21 @@ class DeviceController {
 
     async createComment(req, res, next) {
         try {
-            // Moved INSIDE the try...catch block
-            const token = req.headers.authorization.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.SECRET_KEY);
-
             const { device_id, text } = req.body;
 
-            // Create the comment in the database
-            const comment = await Comment.create({ user_id: decoded.id, device_id, text });
+            // ВОТ ВАШ USER ID! Бэкенд сам достал его из токена
+            const userId = req.user.id;
+
+            // Теперь сохраняем в базу данных
+            const comment = await Comment.create({
+                deviceId: device_id,
+                userId: userId,
+                text: text
+            });
 
             return res.json(comment);
         } catch (e) {
-            // Now, if token fails, it safely returns a proper error instead of hanging!
-            return res.status(401).json({ message: "Not authorized or token expired" });
+            next(ApiError.badRequest(e.message));
         }
     }
 
