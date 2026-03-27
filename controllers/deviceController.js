@@ -10,9 +10,23 @@ async function uploadBlob(fileName, fileData, contentType) {
     // Environments may be configured with either public or private Blob stores.
     // We try `public` first and fall back to `private`.
     try {
-        return await put(fileName, fileData, { contentType, access: 'public' });
-    } catch (ePublic) {
-        return await put(fileName, fileData, { contentType, access: 'private' });
+        // Best-effort: let the SDK infer access from the connected store.
+        return await put(fileName, fileData, { contentType });
+    } catch (e0) {
+        // If inference fails, fall back to explicit access values.
+        try {
+            return await put(fileName, fileData, { contentType, access: 'public' });
+        } catch (ePublic) {
+            try {
+                return await put(fileName, fileData, { contentType, access: 'private' });
+            } catch (ePrivate) {
+                const publicMsg = ePublic?.message || String(ePublic);
+                const privateMsg = ePrivate?.message || String(ePrivate);
+                throw new Error(
+                    `Vercel Blob upload failed. infer: ${e0?.message || String(e0)}. public: ${publicMsg}. private: ${privateMsg}`
+                );
+            }
+        }
     }
 }
 
