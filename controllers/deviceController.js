@@ -30,7 +30,9 @@ class DeviceController {
             const contentType = file.mimetype || 'text/plain';
             const blob = await put(fileName, file.data, {
                 contentType,
-                access: 'public'
+                // Your Vercel Blob store is configured as private,
+                // so we must upload with private access.
+                access: 'private'
             });
             const fileUrl = blob.url;
 
@@ -179,7 +181,7 @@ async update(req, res, next) {
                 const contentType = file.mimetype || 'text/plain';
                 const blob = await put(fileName, file.data, {
                     contentType,
-                    access: 'public'
+                    access: 'private'
                 });
                 device.img = blob.url; // Сохраняем сгенерированный URL от Vercel
             } else if (img && typeof img === 'string') {
