@@ -34,7 +34,7 @@ async function uploadBlob(fileName, fileData, contentType) {
 class DeviceController {
     async create(req, res, next) {
         try {
-            let { name, brandId, typeId, info, description } = req.body;
+            let { name, brandId, typeId, info, description, price } = req.body;
 
             const token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, process.env.SECRET_KEY);
@@ -56,7 +56,12 @@ class DeviceController {
             const fileUrl = blob.url;
 
             // Create the device with owner_id
-            const device = await Device.create({ name, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId, description });
+            const normalizedPrice = price === undefined || price === null || price === '' ? 0 : Number(price);
+            if (Number.isNaN(normalizedPrice) || normalizedPrice < 0) {
+                return next(ApiError.badRequest('Некорректная цена'));
+            }
+
+            const device = await Device.create({ name, brandId, typeId, img: fileUrl, views: 0, device_comments: "[]", owner_id: ownerId, description, price: normalizedPrice });
             if (info) {
                 info = JSON.parse(info);
                 info.forEach(i =>
@@ -178,7 +183,7 @@ async update(req, res, next) {
         try {
             const { id } = req.params;
             // Добавили img сюда, чтобы ловить текстовый URL с фронтенда
-            let { name, brandId, typeId, info, description, img } = req.body;
+            let { name, brandId, typeId, info, description, img, price } = req.body;
 
             const device = await Device.findByPk(id);
             if (!device) {
@@ -190,6 +195,13 @@ async update(req, res, next) {
             if (brandId) device.brandId = brandId;
             if (typeId) device.typeId = typeId;
             if (description !== undefined) device.description = description;
+            if (price !== undefined) {
+                const normalizedPrice = price === null || price === '' ? 0 : Number(price);
+                if (Number.isNaN(normalizedPrice) || normalizedPrice < 0) {
+                    return next(ApiError.badRequest('Некорректная цена'));
+                }
+                device.price = normalizedPrice;
+            }
 
             // --- ГИБКАЯ ОБРАБОТКА КАРТИНКИ ---
             const file = req.files?.img;

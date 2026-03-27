@@ -59,6 +59,7 @@ const Device = sequelize.define("device", {
   views: { type: DataTypes.INTEGER, allowNull: false },
   device_comments: { type: DataTypes.STRING, allowNull: true },
   description: { type: DataTypes.TEXT, allowNull: true }, // Change to TEXT
+  price: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   owner_id: { type: DataTypes.INTEGER, allowNull: false },
 });
 
