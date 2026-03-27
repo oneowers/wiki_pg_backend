@@ -6,6 +6,16 @@ const { put } = require('@vercel/blob');
 const jwt = require('jsonwebtoken');
 
 
+async function uploadBlob(fileName, fileData, contentType) {
+    // Environments may be configured with either public or private Blob stores.
+    // We try `public` first and fall back to `private`.
+    try {
+        return await put(fileName, fileData, { contentType, access: 'public' });
+    } catch (ePublic) {
+        return await put(fileName, fileData, { contentType, access: 'private' });
+    }
+}
+
 
 class DeviceController {
     async create(req, res, next) {
@@ -28,12 +38,7 @@ class DeviceController {
             }
             const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`; // Generate a unique file name
             const contentType = file.mimetype || 'text/plain';
-            const blob = await put(fileName, file.data, {
-                contentType,
-                // Your Vercel Blob store is configured as private,
-                // so we must upload with private access.
-                access: 'private'
-            });
+            const blob = await uploadBlob(fileName, file.data, contentType);
             const fileUrl = blob.url;
 
             // Create the device with owner_id
@@ -179,10 +184,7 @@ async update(req, res, next) {
                 // 1. Если пришел реальный файл (задел под Vercel Blob)
                 const fileName = `${uuid.v4()}.${file.name.split('.').pop()}`;
                 const contentType = file.mimetype || 'text/plain';
-                const blob = await put(fileName, file.data, {
-                    contentType,
-                    access: 'private'
-                });
+                const blob = await uploadBlob(fileName, file.data, contentType);
                 device.img = blob.url; // Сохраняем сгенерированный URL от Vercel
             } else if (img && typeof img === 'string') {
                 // 2. Если файла нет, но пользователь передал прямую ссылку (строку)
