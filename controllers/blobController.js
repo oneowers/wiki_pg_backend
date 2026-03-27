@@ -10,8 +10,12 @@ class BlobController {
         return next(ApiError.badRequest('Missing "pathname"'));
       }
 
-      // For private blobs we can only fetch via SDK (server-side) with access: 'private'
-      const result = await get(pathname, { access: 'private' });
+      // Try private first, then fall back to public.
+      // This keeps the app working regardless of how the store is configured.
+      let result = await get(pathname, { access: 'private' }).catch(() => null);
+      if (!result) {
+        result = await get(pathname, { access: 'public' });
+      }
       if (!result || result.statusCode !== 200) {
         return res.status(404).send('Not found');
       }
