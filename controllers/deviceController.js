@@ -5,6 +5,7 @@ const ApiError = require('../error/ApiError')
 const { put } = require('@vercel/blob');
 const jwt = require('jsonwebtoken');
 
+const SECRET_KEY = process.env.SECRET_KEY || 'secret_911';
 
 async function uploadBlob(fileName, fileData, contentType) {
     // Environments may be configured with either public or private Blob stores.
@@ -37,7 +38,7 @@ class DeviceController {
             let { name, brandId, typeId, info, description, price } = req.body;
 
             const token = req.headers.authorization.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.SECRET_KEY);
+            const decoded = jwt.verify(token, SECRET_KEY);
             const ownerId = decoded.id;
 
             //FOR LOCAL

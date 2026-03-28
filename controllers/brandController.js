@@ -1,8 +1,7 @@
 const { User, Brand } = require("../models/models");
 const jwt = require("jsonwebtoken");
 
-
-
+const SECRET_KEY = process.env.SECRET_KEY || "secret_911";
 
 class BrandController {
   async create(req, res) {
@@ -20,7 +19,7 @@ class BrandController {
 
     // Получите идентификатор пользователя из токена
     const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const decoded = jwt.verify(token, SECRET_KEY);
     const userId = decoded.id;
 
     // Создайте бренд и сохраните его id для пользователя
