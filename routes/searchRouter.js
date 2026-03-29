@@ -79,7 +79,7 @@ function rateLimit(req, res, next) {
  *     fromCache: boolean
  *   }
  */
-router.get('/search', rateLimit, async (req, res) => {
+router.get('/', rateLimit, async (req, res) => {
   try {
     const {
       query,
