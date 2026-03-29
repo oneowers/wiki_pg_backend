@@ -8,6 +8,7 @@ const furnitureRouter = require('./furnitureRouter')
 const orderRouter = require('./orderRouter')
 const participantRouter = require('./participantRouter')
 const blobRouter = require('./blobRouter')
+const searchRouter = require('./searchRouter')
 
 router.use('/user', userRouter)
 router.use('/type', typeRouter)
@@ -17,5 +18,6 @@ router.use('/blob', blobRouter)
 router.use('/furniture', furnitureRouter)
 router.use('/participant', participantRouter)
 router.use('/order', orderRouter)
+router.use('/search', searchRouter)
 
 module.exports = router
