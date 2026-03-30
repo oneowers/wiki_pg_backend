@@ -16,6 +16,11 @@ class ApiError extends Error{
     static forbidden(message) {
         return new ApiError(403, message)
     }
+
+
+    static Delete_me_kamolov(message) {
+        return new ApiError(403, message)
+    }
 }
 
 module.exports = ApiError
